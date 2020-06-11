@@ -95,7 +95,8 @@ namespace CompanyEmployees.IDP
                     {
                         // if the client is PKCE then we assume it's native, so this change in how to
                         // return the response is for better UX for the end user.
-                        return this.LoadingPage("Redirect", model.ReturnUrl);
+                        //return this.LoadingPage("Redirect", model.ReturnUrl);
+                        return Redirect("https://localhost:5010");
                     }
 
                     return Redirect(model.ReturnUrl);

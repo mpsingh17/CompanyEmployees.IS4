@@ -39,7 +39,8 @@ namespace CompanyEmployees.IDP
                     {
                         new Secret("CompanyEmployeeClientSecret".Sha512())
                     },
-                    RequirePkce = true
+                    RequirePkce = true,
+                    PostLogoutRedirectUris = new List<string> { "https://localhost:5010/signout-callback-oidc" }
                     //RequireConsent = false
                 }
             };

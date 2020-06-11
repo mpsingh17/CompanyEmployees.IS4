@@ -48,6 +48,7 @@ namespace CompanyEmployees.Client
                 opt.ClientSecret = "CompanyEmployeeClientSecret";
                 opt.ResponseType = OpenIdConnectResponseType.Code;
                 opt.SaveTokens = true;
+                //opt.SignedOutCallbackPath = "/signout-callback-oidc";
             });
 
             services.AddControllersWithViews();
