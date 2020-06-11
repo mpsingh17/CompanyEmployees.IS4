@@ -45,10 +45,9 @@ namespace CompanyEmployees.Client
                 opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 opt.Authority = "https://localhost:5005";
                 opt.ClientId = "companyemployeeclient";
+                opt.ClientSecret = "CompanyEmployeeClientSecret";
                 opt.ResponseType = OpenIdConnectResponseType.Code;
                 opt.SaveTokens = true;
-                opt.ClientSecret = "CompanyEmployeeClientSecret";
-                opt.UsePkce = false;
             });
 
             services.AddControllersWithViews();

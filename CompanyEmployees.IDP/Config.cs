@@ -39,6 +39,7 @@ namespace CompanyEmployees.IDP
                     {
                         new Secret("CompanyEmployeeClientSecret".Sha512())
                     },
+                    RequirePkce = true
                     //RequireConsent = false
                 }
             };
