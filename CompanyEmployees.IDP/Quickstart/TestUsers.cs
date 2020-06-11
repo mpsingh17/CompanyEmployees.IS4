@@ -18,11 +18,11 @@ namespace CompanyEmployees.IDP
                 SubjectId = "a9ea0f25-b964-409f-bcce-c923266249b4",
                 Username = "John",
                 Password = "JohnPassword",
-                //Claims = new List<Claim>
-                //{
-                //    new Claim("given_name", "John"),
-                //    new Claim("family_name", "Doe")
-                //}
+                Claims = new List<Claim>
+                {
+                    new Claim("given_name", "John"),
+                    new Claim("family_name", "Doe")
+                }
             },
             new TestUser
             {
