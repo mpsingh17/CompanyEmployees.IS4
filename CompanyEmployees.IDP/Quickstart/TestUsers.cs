@@ -21,7 +21,9 @@ namespace CompanyEmployees.IDP
                 Claims = new List<Claim>
                 {
                     new Claim("given_name", "John"),
-                    new Claim("family_name", "Doe")
+                    new Claim("family_name", "Doe"),
+                    new Claim("nickname", "Peeta"),
+                    new Claim("address", "37D Station Road, Takanini.")
                 }
             },
             new TestUser
@@ -32,7 +34,8 @@ namespace CompanyEmployees.IDP
                 Claims = new List<Claim>
                 {
                     new Claim("given_name", "Jane"),
-                    new Claim("family_name", "Doe")
+                    new Claim("family_name", "Doe"),
+                    new Claim("address", "1 Station Road, Takanini.")
                 }
             }
         };

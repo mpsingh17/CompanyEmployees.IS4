@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,9 @@ namespace CompanyEmployees.Client
                 opt.ResponseType = OpenIdConnectResponseType.Code;
                 opt.SaveTokens = true;
                 opt.GetClaimsFromUserInfoEndpoint = true;
+                opt.Scope.Add("address");
+                //opt.ClaimActions.MapUniqueJsonKey("nickname", "nickname");
+                //opt.ClaimActions.MapUniqueJsonKey("address", "address");
                 //opt.SignedOutCallbackPath = "/signout-callback-oidc";
             });
 
