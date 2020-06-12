@@ -15,6 +15,7 @@ using System.Net.Sockets;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using System.Net;
 
 namespace CompanyEmployees.Client.Controllers
 {
@@ -72,23 +73,32 @@ namespace CompanyEmployees.Client.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [Authorize]
+        [Authorize(Policy = "CanCreateAndModifyData")]
         public async Task<IActionResult> Companies()
         {
             var httpClient = _httpClientFactory.CreateClient("APIClient");
 
             var response = await httpClient.GetAsync("api/companies").ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
+            if(response.IsSuccessStatusCode)
+            {
+                var companiesString = await response.Content.ReadAsStringAsync();
+                var companies = JsonSerializer.Deserialize<List<CompanyViewModel>>(
+                    companiesString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
 
-            var companiesString = await response.Content.ReadAsStringAsync();
-            var companies = JsonSerializer.Deserialize<List<CompanyViewModel>>(
-                companiesString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            );
+                _logger.LogInformation("{CompanyCount} has been returned.", companies.Count);
 
-            _logger.LogInformation("{CompanyCount} has been returned.", companies.Count);
+                return View(companies);
+            }
+            if (response.StatusCode == HttpStatusCode.Unauthorized ||
+                response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                return RedirectToAction("AccessDenied", "Auth");
+            }
 
-            return View(companies);
+            throw new Exception("There is a problem accessing the API.");
         }
     }
 }

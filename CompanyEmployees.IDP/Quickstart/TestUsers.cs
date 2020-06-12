@@ -24,7 +24,8 @@ namespace CompanyEmployees.IDP
                     new Claim("family_name", "Doe"),
                     new Claim("nickname", "Peeta"),
                     new Claim("address", "37D Station Road, Takanini."),
-                    new Claim("role", "Admin")
+                    new Claim("role", "Admin"),
+                    new Claim("country", "USA")
                 }
             },
             new TestUser
@@ -37,7 +38,8 @@ namespace CompanyEmployees.IDP
                     new Claim("given_name", "Jane"),
                     new Claim("family_name", "Doe"),
                     new Claim("address", "1 Station Road, Takanini."),
-                    new Claim("role", "Visitor")
+                    new Claim("role", "Visitor"),
+                    new Claim("country", "USA")
                 }
             }
         };

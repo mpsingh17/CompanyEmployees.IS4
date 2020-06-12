@@ -16,12 +16,15 @@ namespace CompanyEmployees.IDP
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
                 new IdentityResources.Address(),
-                new IdentityResource("roles", "User roles(s)", new List<string> { "role" })
+                new IdentityResource("roles", "User roles(s)", new List<string> { "role" }),
+                new IdentityResource("country", "Your Country", new List<string> { "country" })
             };
 
         public static IEnumerable<ApiResource> Apis =>
             new ApiResource[] 
-            { };
+            {
+                new ApiResource("companyemployeeapi", "CompanyEmployee Web API")
+            };
         
         public static IEnumerable<Client> Clients =>
             new Client[] 
@@ -37,7 +40,9 @@ namespace CompanyEmployees.IDP
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Address,
-                        "roles"
+                        "roles",
+                        "country",
+                        "companyemployeeapi"
                     },
                     ClientSecrets =
                     {

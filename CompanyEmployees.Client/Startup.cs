@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using CompanyEmployees.Client.Handlers;
 using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,12 +33,16 @@ namespace CompanyEmployees.Client
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+            services.AddTransient<BearerTokenHandler>();
+
             services.AddHttpClient("APIClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:5001/");
                 client.DefaultRequestHeaders.Clear();
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
-            });
+            })
+            .AddHttpMessageHandler<BearerTokenHandler>();
 
             services.AddHttpClient("IDPClient", client =>
             {
@@ -66,8 +71,11 @@ namespace CompanyEmployees.Client
                 opt.GetClaimsFromUserInfoEndpoint = true;
                 opt.Scope.Add("address");
                 opt.Scope.Add("roles");
+                opt.Scope.Add("country");
+                opt.Scope.Add("companyemployeeapi");
 
                 opt.ClaimActions.MapUniqueJsonKey("role", "role");
+                opt.ClaimActions.MapUniqueJsonKey("country", "country");
 
                 opt.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -77,6 +85,16 @@ namespace CompanyEmployees.Client
                 //opt.ClaimActions.MapUniqueJsonKey("nickname", "nickname");
                 //opt.ClaimActions.MapUniqueJsonKey("address", "address");
                 //opt.SignedOutCallbackPath = "/signout-callback-oidc";
+            });
+
+            services.AddAuthorization(authOpt =>
+            {
+                authOpt.AddPolicy("CanCreateAndModifyData", policyBuilder =>
+                {
+                    policyBuilder.RequireAuthenticatedUser();
+                    policyBuilder.RequireRole("Admin");
+                    policyBuilder.RequireClaim("country", "USA");
+                });
             });
 
             services.AddControllersWithViews();
