@@ -9,6 +9,12 @@ using CompanyEmployees.Client.Models;
 using System.Net.Http;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using System.Net.Sockets;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace CompanyEmployees.Client.Controllers
 {
@@ -28,8 +34,35 @@ namespace CompanyEmployees.Client.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Privacy()
         {
+            var idpClient = _httpClientFactory.CreateClient("IDPClient");
+            var metaDataResponse = await idpClient.GetDiscoveryDocumentAsync();
+
+            var accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+
+            var response = await idpClient.GetUserInfoAsync(new UserInfoRequest
+            {
+                Address = metaDataResponse.UserInfoEndpoint,
+                Token = accessToken
+            });
+
+            if (response.IsError)
+            {
+                throw new Exception("Problem while fetching data from UserInfoEndPoint.", response.Exception);
+            }
+
+            var addressClaim = response.Claims.FirstOrDefault(c => c.Type.Equals("address"));
+
+            //Claim nickname = response.Claims.FirstOrDefault(c => c.Type.Equals(nameof(nickname)));
+
+            User.AddIdentity(new ClaimsIdentity(new List<Claim>
+            {
+                new Claim(addressClaim.Type.ToString(), addressClaim.Value.ToString()),
+                //new Claim(nickname.Type.ToString(), nickname.Value.ToString())
+            }));
+
             return View();
         }
 

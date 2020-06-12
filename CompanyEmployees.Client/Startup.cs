@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityModel;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 
 namespace CompanyEmployees.Client
@@ -37,12 +39,22 @@ namespace CompanyEmployees.Client
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             });
 
+            services.AddHttpClient("IDPClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5005/");
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            });
+
             services.AddAuthentication(opt =>
             {
                 opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
             })
-            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
+            {
+                opt.AccessDeniedPath = "/Auth/AccessDenied";
+            })
             .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, opt =>
             {
                 opt.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -53,6 +65,15 @@ namespace CompanyEmployees.Client
                 opt.SaveTokens = true;
                 opt.GetClaimsFromUserInfoEndpoint = true;
                 opt.Scope.Add("address");
+                opt.Scope.Add("roles");
+
+                opt.ClaimActions.MapUniqueJsonKey("role", "role");
+
+                opt.TokenValidationParameters = new TokenValidationParameters
+                {
+                    RoleClaimType = JwtClaimTypes.Role
+                };
+
                 //opt.ClaimActions.MapUniqueJsonKey("nickname", "nickname");
                 //opt.ClaimActions.MapUniqueJsonKey("address", "address");
                 //opt.SignedOutCallbackPath = "/signout-callback-oidc";
