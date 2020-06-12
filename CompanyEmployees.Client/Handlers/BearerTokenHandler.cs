@@ -47,7 +47,7 @@ namespace CompanyEmployees.Client.Handlers
         private async Task<string> GetAccessTokenAsync()
         {
             var expiresAtToken = await _httpContextAccessor
-                .HttpContext.GetTokenAsync("expire_at");
+                .HttpContext.GetTokenAsync("expires_at");
 
             var expiresAtDateTimeOffset = DateTimeOffset.Parse(expiresAtToken, CultureInfo.InvariantCulture);
 
