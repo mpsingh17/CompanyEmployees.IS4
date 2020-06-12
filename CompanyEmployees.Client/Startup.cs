@@ -73,6 +73,7 @@ namespace CompanyEmployees.Client
                 opt.Scope.Add("roles");
                 opt.Scope.Add("country");
                 opt.Scope.Add("companyemployeeapi");
+                opt.Scope.Add("offline_access");
 
                 opt.ClaimActions.MapUniqueJsonKey("role", "role");
                 opt.ClaimActions.MapUniqueJsonKey("country", "country");
