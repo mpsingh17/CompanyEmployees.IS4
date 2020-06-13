@@ -93,32 +93,33 @@ namespace CompanyEmployees.Client.Handlers
 
         private List<AuthenticationToken> GetUpdatedToken(TokenResponse refreshResponse)
         {
-            var updatedToken = new List<AuthenticationToken>();
-
-            updatedToken.Add(new AuthenticationToken
+            var updatedToken = new List<AuthenticationToken>
             {
-                Name = OpenIdConnectParameterNames.IdToken,
-                Value = refreshResponse.IdentityToken
-            });
+                new AuthenticationToken
+                {
+                    Name = OpenIdConnectParameterNames.IdToken,
+                    Value = refreshResponse.IdentityToken
+                },
 
-            updatedToken.Add(new AuthenticationToken
-            {
-                Name = OpenIdConnectParameterNames.AccessToken,
-                Value = refreshResponse.AccessToken
-            });
+                new AuthenticationToken
+                {
+                    Name = OpenIdConnectParameterNames.AccessToken,
+                    Value = refreshResponse.AccessToken
+                },
 
-            updatedToken.Add(new AuthenticationToken
-            {
-                Name = OpenIdConnectParameterNames.RefreshToken,
-                Value = refreshResponse.RefreshToken
-            });
+                new AuthenticationToken
+                {
+                    Name = OpenIdConnectParameterNames.RefreshToken,
+                    Value = refreshResponse.RefreshToken
+                },
 
-            updatedToken.Add(new AuthenticationToken
-            {
-                Name = "expires_at",
-                Value = (DateTime.UtcNow + TimeSpan.FromSeconds(refreshResponse.ExpiresIn))
+                new AuthenticationToken
+                {
+                    Name = "expires_at",
+                    Value = (DateTime.UtcNow + TimeSpan.FromSeconds(refreshResponse.ExpiresIn))
                 .ToString("o", CultureInfo.InvariantCulture)
-            });
+                }
+            };
 
             return updatedToken;
         }
