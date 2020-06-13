@@ -35,7 +35,7 @@ namespace CompanyEmployees.IDP
             try
             {
                 Log.Information("Starting host...");
-                CreateHostBuilder(args).Build().Run();
+                CreateHostBuilder(args).Build().MigrateDatabase().Run();
                 return 0;
             }
             catch (Exception ex)

@@ -4,18 +4,24 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Data.SqlTypes;
+using System.Reflection;
 
 namespace CompanyEmployees.IDP
 {
     public class Startup
     {
         public IWebHostEnvironment Environment { get; }
+        public IConfiguration Configuration { get; }
 
-        public Startup(IWebHostEnvironment environment)
+        public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
             Environment = environment;
+            Configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -23,11 +29,26 @@ namespace CompanyEmployees.IDP
             // uncomment, if you want to add an MVC-based UI
             services.AddControllersWithViews();
 
+            var migrationAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
             var builder = services.AddIdentityServer()
-                .AddInMemoryIdentityResources(Config.Ids)
-                .AddInMemoryApiResources(Config.Apis)
-                .AddInMemoryClients(Config.Clients)
-                .AddTestUsers(TestUsers.Users);
+                .AddTestUsers(TestUsers.Users)
+                .AddConfigurationStore(opt =>
+                {
+                    opt.ConfigureDbContext = c =>
+                        c.UseSqlServer(
+                            Configuration.GetConnectionString("SqlConnection"),
+                            sql => sql.MigrationsAssembly(migrationAssembly)
+                        );
+                })
+                .AddOperationalStore(opt =>
+                {
+                    opt.ConfigureDbContext = c =>
+                        c.UseSqlServer(
+                            Configuration.GetConnectionString("SqlConnection"),
+                            sql => sql.MigrationsAssembly(migrationAssembly)
+                        );
+                });
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
